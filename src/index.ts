@@ -1,20 +1,31 @@
-// Function returning never must not have a reachable end point
-function error(message: string): never {
-	throw new Error(message);
-}
+import { Client, Intents } from 'discord.js';
+import { LarkApi } from './lark-api';
 
-// Inferred return type is never
-export function fail() {
-	return error("Something failed");
-}
+console.log(Intents);
+const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES ] });
 
-// Function returning never must not have a reachable end point
-export function infiniteLoop(): { _?: never } {
-	return {
-		'_': new Error('test'),
+const larkApi = new LarkApi();
+
+client.on('ready', function() {
+	console.log(`Logged in as ${client?.user?.tag}!`);
+	console.log(client.guilds);
+});
+
+client.on('debug', function(info) {
+	console.log('debug log', info);
+});
+
+client.on('messageCreate', function(message) {
+	switch ( message.type ) {
+		case 'GUILD_MEMBER_JOIN':
+			break;
+		case 'DEFAULT':
+		default:
+			if ( message.content === 't' ) {
+				larkApi.getUser('귀여운라라벨');
+			}
+			console.log('recive message', message);
 	}
-}
+});
 
-export function success() {
-	return true;
-}
+client.login(process.env.BOT_TOKEN);
