@@ -9,6 +9,12 @@ import path from 'path';
 import got from 'got';
 import cheerio from 'cheerio';
 
+export interface LarkUser {
+	name: string;
+	clan: string;
+	itemLevel: number;
+}
+
 export class LarkApi {
 
 	private schema: string = 'https://';
@@ -21,9 +27,17 @@ export class LarkApi {
 		return await got.get(this.schema + path.join(this.host, url));
 	}
 
-	async getUser(name: string) {
+	async getUser(name: string): Promise<LarkUser> {
 		const res = await this.req('/Profile/Character/{0}', name);
-		console.log(res.body);
+		const $ = cheerio.load(res.body);
+		const itemLevel = parseFloat($('.level-info2__item').text().match(/Lv\.([0-9,.]*)/)?.[1].replace(',', '') as string) || 0;
+		const clan = $($('.game-info__guild').children()[1]).text();
+
+		return {
+			name,
+			clan,
+			itemLevel,
+		};
 	}
 
 }
