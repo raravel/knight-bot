@@ -6,7 +6,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import { GuildMember, Client, Guild } from 'discord.js';
+import { GuildMember, Client, Guild, Message, User } from 'discord.js';
 
 export function readChat(type: string) {
 	return fs.readFileSync(path.join(__dirname,`../chat/${type}.md`), { encoding: 'utf8' });

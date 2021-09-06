@@ -14,6 +14,7 @@ import {
 	isClanMember,
 	findGuildAndChannel,
 } from './common/';
+import { cmdParse, processor } from './command/';
 
 const client = new Client({
 	intents: [
@@ -44,19 +45,28 @@ client.on('ready', async function() {
 				.setLabel('인증하기')
 				.setStyle('PRIMARY')
 		);
-	await channel.send({ content: readChat('join'), components: [ row ] });
+	//await channel.send({ content: readChat('join'), components: [ row ] });
+
+	console.log(await larkApi.getUser('귀여운라라벨'));
 });
 
 client.on('debug', function(info) {
 	//console.log('debug log', info);
 });
 
-client.on('messageCreate', function(message) {
+client.on('messageCreate', async function(message) {
 	switch ( message.type ) {
 		case 'GUILD_MEMBER_JOIN':
 			break;
 		case 'DEFAULT':
 		default:
+			const cmd = cmdParse(message);
+			if ( cmd.isCmd ) {
+				const ret = await processor(cmd);
+				if ( ret ) {
+					await message.channel.send({ content: ret });
+				}
+			}
 			//console.log('recive message', message);
 	}
 });
