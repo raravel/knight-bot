@@ -12,7 +12,7 @@ const larkApi = new LarkApi();
 export const charactor: CommandObject = {
 	command: '정보',
 	permission: null,
-	async run(cmd: CommandMessage) {
+	async run(cmd: CommandMessage, client) {
 		const user = await larkApi.getUser(cmd.content);
 		let ret = '';
 		ret += '```css\n';

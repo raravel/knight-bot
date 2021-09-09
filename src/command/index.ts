@@ -4,8 +4,20 @@
  *
  * Copyright (c) raravel. Licensed under the MIT License.
  */
-import { User, Message } from 'discord.js';
+import {
+	GuildMember,
+	Message,
+	TextChannel,
+	Guild,
+	Client,
+} from 'discord.js';
 import { charactor } from './search';
+import joinMember from '../join-member';
+import {
+	findChannelFromGuild,
+	findMemberFromGuild,
+	findGuildAndMember,
+} from '../common/';
 
 export interface CommandMessage {
 	isCmd: boolean;
@@ -13,9 +25,9 @@ export interface CommandMessage {
 	command: string;
 	args: string[];
 	raw: string;
-	author: User|null;
+	author?: GuildMember;
 }
-export type CommandFunction = (cmd: CommandMessage) => string|Promise<string>;
+export type CommandFunction = (cmd: CommandMessage, client: Client) => string|Promise<string>;
 export interface CommandObject {
 	command: string;
 	permission: any;
@@ -24,16 +36,31 @@ export interface CommandObject {
 
 const commands: CommandObject[] = [
 	charactor,
+	{
+		command: '승인',
+		permission: null,
+		async run(cmd: CommandMessage, client: Client) {
+			const guild = cmd.author?.guild as Guild;
+			const member = findMemberFromGuild(guild, 'displayName', cmd.args[0]);
+			const ret = await joinMember(member);
+			if ( ret.result ) {
+				const channel = findChannelFromGuild(guild, '조화의광장') as TextChannel;
+				await channel.send({ content: `<@${member.user.id}>님이 함께하게 되었습니다. 다같이 환영해 주세요.` });
+				return `<@${member.user.id}>님의 가입이 승인되었습니다.`;
+			} else {
+				return `<@${member.user.id}>님. ${ret.detail}`;
+			}
+		},
+	},
 ];
 
-export function cmdParse(message: Message): CommandMessage {
+export function cmdParse(message: Message, client): CommandMessage {
 	const cmd: CommandMessage = {
 		isCmd: false,
 		content: '',
 		args: [],
 		command: '',
 		raw: '',
-		author: null,
 	};
 	if ( message.content.startsWith('.') ) {
 		cmd.raw = message.content;
@@ -44,14 +71,14 @@ export function cmdParse(message: Message): CommandMessage {
 			cmd.args = m[2].split(/\s+/);
 		}
 		cmd.isCmd = true;
-		cmd.author = message.author;
+		cmd.author = findGuildAndMember(client, '기사학원', 'id', message.author.id);
 	}
 	return cmd;
 }
 
-export async function processor(cmd: CommandMessage) {
+export async function processor(client: Client, cmd: CommandMessage) {
 	const command = commands.find(({ command }) => command === cmd.command);
 	if ( command ) {
-		return await command.run(cmd);
+		return await command.run(cmd, client);
 	}
 }

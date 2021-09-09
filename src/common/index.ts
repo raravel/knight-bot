@@ -27,3 +27,11 @@ export function findChannelFromGuild(guild: Guild, channel: string) {
 export function findGuildAndChannel(client: Client, guild: string, channel: string) {
 	return findChannelFromGuild(findGuild(client, guild) as Guild, channel);
 }
+
+export function findMemberFromGuild(guild: Guild, key: string, val: any) {
+	return guild.members.cache.find((m) => m[key] === val) as GuildMember;
+}
+
+export function findGuildAndMember(client: Client, guild: string, key: string, val: any) {
+	return findMemberFromGuild(findGuild(client, guild) as Guild, key, val);
+}

@@ -29,25 +29,38 @@ const larkApi = new LarkApi();
 
 const CLAN_NAME = '기사학원';
 
+function isJoinComponent(component: MessageActionRow) {
+	if ( component.type === 'ACTION_ROW' ) {
+		return component.components[0]?.customId === 'sign-account';
+	}
+	return false;
+}
+
 client.on('ready', async function() {
 	console.log(`Logged in as ${client?.user?.tag}!`);
 	const channel: TextChannel = findGuildAndChannel(client, CLAN_NAME, '레온하트') as TextChannel;
 
-	const messages = await channel.messages.fetch({ limit: 100 });
-	for ( const message of messages.values() ) {
-		await message.delete();
+	const messages = await channel.messages.fetch({ limit: 10 });
+	let flag = true;
+	for ( const msg of messages.values() ) {
+		if ( msg.author.username === 'KnightBot' ) {
+			if ( isJoinComponent(msg.components[0]) ) {
+				flag = false;
+				break;
+			}
+		}
 	}
 
-	const row = new MessageActionRow()
-		.addComponents(
-			new MessageButton()
-				.setCustomId('sign-account')
-				.setLabel('인증하기')
-				.setStyle('PRIMARY')
-		);
-	//await channel.send({ content: readChat('join'), components: [ row ] });
-
-	console.log(await larkApi.getUser('귀여운라라벨'));
+	if ( flag ) {
+		const row = new MessageActionRow()
+			.addComponents(
+				new MessageButton()
+					.setCustomId('sign-account')
+					.setLabel('인증하기')
+					.setStyle('PRIMARY')
+			);
+		await channel.send({ content: readChat('join'), components: [ row ] });
+	}
 });
 
 client.on('debug', function(info) {
@@ -60,9 +73,9 @@ client.on('messageCreate', async function(message) {
 			break;
 		case 'DEFAULT':
 		default:
-			const cmd = cmdParse(message);
+			const cmd = cmdParse(message, client);
 			if ( cmd.isCmd ) {
-				const ret = await processor(cmd);
+				const ret = await processor(client, cmd);
 				if ( ret ) {
 					await message.channel.send({ content: ret });
 				}

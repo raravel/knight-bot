@@ -17,6 +17,14 @@ export default async function(member: GuildMember): Promise<{ data: GuildMember|
 
 	console.log(`[${member.user.id}] ${member.nickname} 가입 시도`);
 
+	if ( member.roles.cache.find((role) => role.name === '길드원') ) {
+		return {
+			data: null,
+			result: false,
+			detail: '이미 길드원 역할이 부여된 멤버입니다.',
+		};
+	}
+
 	for ( const m of guild.members.cache.values() ) {
 		if ( m.user.id !== member.user.id && m.nickname === member.nickname) {
 			return {
@@ -25,14 +33,6 @@ export default async function(member: GuildMember): Promise<{ data: GuildMember|
 				detail: '이미 가입된 멤버와 중복됩니다. 닉네임을 확인해 주세요.',
 			};
 		}
-	}
-
-	if ( member.roles.cache.find((role) => role.name === '길드원') ) {
-		return {
-			data: null,
-			result: false,
-			detail: '이미 길드원 역할이 부여된 멤버입니다.',
-		};
 	}
 
 	const user = await larkApi.getUser(member.nickname as string);
