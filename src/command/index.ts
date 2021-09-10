@@ -42,7 +42,7 @@ const commands: CommandObject[] = [
 		async run(cmd: CommandMessage, client: Client) {
 			const guild = cmd.author?.guild as Guild;
 			const member = findMemberFromGuild(guild, 'displayName', cmd.args[0]);
-			const ret = await joinMember(member);
+			const ret = await joinMember(member, true);
 			if ( ret.result ) {
 				const channel = findChannelFromGuild(guild, '조화의광장') as TextChannel;
 				await channel.send({ content: `<@${member.user.id}>님이 함께하게 되었습니다. 다같이 환영해 주세요.` });
