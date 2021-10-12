@@ -52,6 +52,22 @@ const commands: CommandObject[] = [
 			}
 		},
 	},
+	{
+		command: '주사위',
+		permission: null,
+		run(cmd: CommandMessage, client: Client) {
+			const num = Math.floor(Math.random() * 100)+1;
+			let ret = `<@${cmd?.author?.user.id}>님의 주사위는 **${num}**입니다.`;
+
+			if ( num === 1 ) {
+				ret += ' 주사위 운이 망했네요.';
+			} else if ( num === 100 ) {
+				ret += ' 강화 붙을 운을 여기다 써버렸네요.';
+			}
+
+			return ret;
+		},
+	},
 ];
 
 export function cmdParse(message: Message, client): CommandMessage {
@@ -64,7 +80,7 @@ export function cmdParse(message: Message, client): CommandMessage {
 	};
 	if ( message.content.startsWith('.') ) {
 		cmd.raw = message.content;
-		const m = cmd.raw.match(/\.(\W+)\s+(.*)/);
+		const m = cmd.raw.match(/\.(\W+)\s*(.*)/);
 		if ( m ) {
 			cmd.command = m[1];
 			cmd.content = m[2];
@@ -78,6 +94,7 @@ export function cmdParse(message: Message, client): CommandMessage {
 
 export async function processor(client: Client, cmd: CommandMessage) {
 	const command = commands.find(({ command }) => command === cmd.command);
+	console.log('processor find command', command);
 	if ( command ) {
 		return await command.run(cmd, client);
 	}
