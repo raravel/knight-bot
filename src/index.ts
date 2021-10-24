@@ -22,6 +22,7 @@ const client = new Client({
 		Intents.FLAGS.GUILD_MESSAGES,
 		Intents.FLAGS.GUILD_MEMBERS,
 		Intents.FLAGS.GUILD_PRESENCES,
+		Intents.FLAGS.GUILD_VOICE_STATES,
 	],
 });
 
@@ -80,7 +81,7 @@ client.on('messageCreate', async function(message) {
 					await message.channel.send({ content: ret });
 				}
 			}
-			//console.log('recive message', message);
+			//console.log('recive message', message, cmd);
 	}
 });
 
@@ -102,6 +103,21 @@ client.on('interactionCreate', async function(interaction) {
 		setTimeout(() => {
 			interaction.deleteReply();
 		}, 5000);
+	}
+});
+
+client.on('voiceStateUpdate', async function(oldState, newState) {
+	const channel = newState.channel;
+	const member = newState.member as GuildMember;
+	const guild = member.guild;
+	const role = guild.roles.cache.find((role) => role.name === '쉬는중') as Role;
+	if ( channel ) {
+		if ( channel.id === '882935484144287754' ) {
+			await member.roles.add(role);
+		}
+	} else {
+		// exit void channel
+		await member.roles.remove(role);
 	}
 });
 

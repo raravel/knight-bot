@@ -80,7 +80,7 @@ export function cmdParse(message: Message, client): CommandMessage {
 	};
 	if ( message.content.startsWith('.') ) {
 		cmd.raw = message.content;
-		const m = cmd.raw.match(/\.(\W+)\s*(.*)/);
+		const m = cmd.raw.match(/\.(\S+)\s*(.*)/);
 		if ( m ) {
 			cmd.command = m[1];
 			cmd.content = m[2];

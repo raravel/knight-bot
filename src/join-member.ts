@@ -25,6 +25,8 @@ export default async function(member: GuildMember, force: boolean = false): Prom
 		};
 	}
 
+	/*
+	 * TODO: 이 부분은 버그가 많아 수정이 필요함.
 	for ( const m of guild.members.cache.values() ) {
 		if ( m.user.id !== member.user.id && m.nickname === member.nickname) {
 			return {
@@ -34,6 +36,7 @@ export default async function(member: GuildMember, force: boolean = false): Prom
 			};
 		}
 	}
+	*/
 
 	const user = await larkApi.getUser(member.nickname as string);
 	if ( force ) {
