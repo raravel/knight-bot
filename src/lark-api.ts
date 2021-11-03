@@ -8,6 +8,8 @@
 import path from 'path';
 import got from 'got';
 import cheerio from 'cheerio';
+import axios from 'axios';
+import qs from 'querystring';
 
 export interface LarkUser {
 	name: string;
@@ -23,6 +25,15 @@ export interface LarkUser {
 	engrave: any[];
 }
 
+const parseWeapon = (obj: any): any => {
+	console.log(obj);
+	const $ = cheerio.load(obj['Element_000'].value);
+	return {
+		name: $.text(),
+		quality: obj['Element_001'].value.qualityValue,
+	};
+};
+
 export class LarkApi {
 
 	private schema: string = 'https://';
@@ -30,9 +41,20 @@ export class LarkApi {
 
 	private async req(url: string, ...args: string[]) {
 		args.forEach((arg: string, idx: number) => {
-			url = url.replaceAll(`{${idx}}`, arg);
+			url = url.replaceAll(`{${idx}}`, qs.escape(arg));
 		});
-		return await got.get(this.schema + path.join(this.host, url));
+
+		url = this.schema + path.join(this.host, url);
+		console.log('url', url);
+		let res: any;
+		try {
+			res = await got.get(url);
+		} catch {
+			res = await axios.get(url);
+			res.body = res.data;
+			res.isAxiosRequest = true;
+		}
+		return res;
 	}
 
 	async getUser(name: string): Promise<LarkUser> {
@@ -69,6 +91,20 @@ export class LarkApi {
 				});
 			}
 		});
+
+		/*
+		{
+			const t: any = res.body.match(/<script type="text\/javascript">[\s\S]*?= ([\s\S]*})?;/);
+			if ( t ) {
+				const profile: any = JSON.parse(t[1] as string);
+				const equip = profile['Equip'];
+
+				console.log(equip);
+				const w = parseWeapon(equip['Eca8a42d_000']);
+				console.log(w);
+			}
+		}
+		*/
 
 		return {
 			engrave,
