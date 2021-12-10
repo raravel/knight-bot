@@ -147,8 +147,12 @@ client.on('voiceStateUpdate', async function(oldState, newState) {
 	if ( channel ) {
 		if ( channel.id === '882935484144287754' ) {
 			// 모험가 쉼터
-			const restRole = guild.roles.cache.find((role) => role.name === '쉬는중') as Role;
-			await member.roles.add(restRole);
+			const role = guild.roles.cache.find((role) => role.name === '쉼터에서 쉬는 중') as Role;
+			await member.roles.add(role);
+		} else if ( channel.id === '918732104047656980' ) {
+			// 네리아 주점
+			const role = guild.roles.cache.find((role) => role.name === '주점에서 마시는 중') as Role;
+			await member.roles.add(role);
 		} else if ( channel.id === '918698962880434257' ) {
 			// 공격대 생성
 			const name = `${member.nickname}님의_공격대`;
@@ -177,8 +181,11 @@ client.on('voiceStateUpdate', async function(oldState, newState) {
 		// exit void channel
 		if ( oldState.channelId === '882935484144287754' ) {
 			// 모험가 쉼터
-			const restRole = guild.roles.cache.find((role) => role.name === '쉬는중') as Role;
-			await member.roles.remove(restRole);
+			const role = guild.roles.cache.find((role) => role.name === '쉼터에서 쉬는 중') as Role;
+			await member.roles.remove(role);
+		} else if ( oldState.channelId === '918732104047656980' ) {
+			const role = guild.roles.cache.find((role) => role.name === '주점에서 마시는 중') as Role;
+			await member.roles.remove(role);
 		}
 	}
 });
