@@ -55,7 +55,7 @@ export default async function(member: GuildMember, force: boolean = false): Prom
 			};
 		}
 
-		if ( user.clan === CLAN_NAME || user.clan === '인생이그것임' ) {
+		if ( user.clan === CLAN_NAME ) {
 			const memberRole = guild.roles.cache.find((role) => role.name === '길드원') as Role;
 			return {
 				detail: 'success',

@@ -28,6 +28,12 @@ const client = new Client({
 
 const larkApi = new LarkApi();
 
+(async () => {
+	larkApi.getUser('귀여운라라벨');
+})();
+
+
+if ( 1 ) {
 const CLAN_NAME = '기사학원';
 
 function isJoinComponent(component: MessageActionRow) {
@@ -59,6 +65,12 @@ client.on('ready', async function() {
 					.setCustomId('sign-account')
 					.setLabel('인증하기')
 					.setStyle('PRIMARY')
+			)
+			.addComponents(
+				new MessageButton()
+					.setCustomId('sign-guest')
+					.setLabel('저는 손님입니다.')
+					.setStyle('SECONDARY')
 			);
 		await channel.send({ content: readChat('join'), components: [ row ] });
 	}
@@ -103,6 +115,25 @@ client.on('interactionCreate', async function(interaction) {
 		setTimeout(() => {
 			interaction.deleteReply();
 		}, 5000);
+	} else if ( interaction.customId === 'sign-guest' ) {
+		const member = interaction.member as GuildMember;
+		const guild = member.guild;
+
+		console.log(`[${member.user.id}] ${member.nickname} 손님으로 가입 시도`);
+
+		if ( member.roles.cache.find((role) => role.name === '손님' || role.name === '길드원') ) {
+			await interaction.reply({ content: `<@${member.user.id}>님. 이미 손님 역할이 부여된 멤버입니다.` });
+		} else {
+			const memberRole = guild.roles.cache.find((role) => role.name === '손님') as Role;
+			await member.roles.add(memberRole),
+
+			await interaction.reply(`<@${member.user.id}>님에게 손님역할이 부여되었습니다.`);
+			const channel = findGuildAndChannel(client, CLAN_NAME, '네리아주점') as TextChannel;
+			await channel.send({ content: `<@${member.user.id}>님 반갑습니다.` });
+		}
+		setTimeout(() => {
+			interaction.deleteReply();
+		}, 5000);
 	}
 });
 
@@ -122,3 +153,4 @@ client.on('voiceStateUpdate', async function(oldState, newState) {
 });
 
 client.login(process.env.BOT_TOKEN);
+}
