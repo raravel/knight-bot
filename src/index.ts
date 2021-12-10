@@ -123,12 +123,16 @@ client.on('interactionCreate', async function(interaction) {
 		if ( member.roles.cache.find((role) => role.name === '손님' || role.name === '길드원') ) {
 			await interaction.reply({ content: `<@${member.user.id}>님. 이미 손님 역할이 부여된 멤버입니다.` });
 		} else {
-			const memberRole = guild.roles.cache.find((role) => role.name === '손님') as Role;
-			await member.roles.add(memberRole),
+			if ( member.nickname === null ) {
+				await interaction.reply({ content: `<@${member.user.id}>님. 서버 프로필 변경에서 닉네임을 변경해 주세요.` });
+			} else {
+				const memberRole = guild.roles.cache.find((role) => role.name === '손님') as Role;
+				await member.roles.add(memberRole),
 
-			await interaction.reply(`<@${member.user.id}>님에게 손님역할이 부여되었습니다.`);
-			const channel = findGuildAndChannel(client, CLAN_NAME, '네리아주점') as TextChannel;
-			await channel.send({ content: `<@${member.user.id}>님 반갑습니다.` });
+				await interaction.reply(`<@${member.user.id}>님에게 손님역할이 부여되었습니다.`);
+				const channel = findGuildAndChannel(client, CLAN_NAME, '네리아주점') as TextChannel;
+				await channel.send({ content: `<@${member.user.id}>님 반갑습니다.` });
+			}
 		}
 		setTimeout(() => {
 			interaction.deleteReply();
@@ -141,7 +145,6 @@ client.on('voiceStateUpdate', async function(oldState, newState) {
 	const member = newState.member as GuildMember;
 	const guild = member.guild;
 	if ( channel ) {
-		console.log(channel);
 		if ( channel.id === '882935484144287754' ) {
 			// 모험가 쉼터
 			const restRole = guild.roles.cache.find((role) => role.name === '쉬는중') as Role;
@@ -149,7 +152,6 @@ client.on('voiceStateUpdate', async function(oldState, newState) {
 		} else if ( channel.id === '918698962880434257' ) {
 			// 공격대 생성
 			const name = `${member.nickname}님의_공격대`;
-			console.log('position', channel.parent?.children.size);
 			const c = await channel.parent?.createChannel(name, {
 				type: 'GUILD_VOICE',
 				permissionOverwrites: [
@@ -172,7 +174,6 @@ client.on('voiceStateUpdate', async function(oldState, newState) {
 			const restRole = guild.roles.cache.find((role) => role.name === '쉬는중') as Role;
 			await member.roles.remove(restRole);
 		}
-		console.log(oldState);
 	}
 });
 
