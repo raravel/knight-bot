@@ -26,6 +26,7 @@ export interface CommandMessage {
 	args: string[];
 	raw: string;
 	author?: GuildMember;
+	message: Message,
 }
 export type CommandFunction = (cmd: CommandMessage, client: Client) => string|Promise<string>;
 export interface CommandObject {
@@ -68,6 +69,24 @@ const commands: CommandObject[] = [
 			return ret;
 		},
 	},
+	{
+		command: '청소',
+		permission: null,
+		async run(cmd: CommandMessage, client: Client) {
+			for ( const channel of cmd.message.mentions.channels.values() ) {
+				if ( channel.type === 'GUILD_TEXT' ) {
+					await cmd.message.channel.send({ content: `<#${channel.id}>의 최근 메시지 30개를 삭제합니다.` });
+					const messages = await (channel as TextChannel).messages.fetch({ limit: 30 });
+					for ( const msg of messages.values() ) {
+						await msg.delete();
+					}
+				} else {
+					await cmd.message.channel.send({ content: `<#${channel.id}>는 텍스트 채널이 아닙니다.` });
+				}
+			}
+			return '청소가 전부 끝났습니다.';
+		},
+	},
 ];
 
 export function cmdParse(message: Message, client): CommandMessage {
@@ -77,6 +96,7 @@ export function cmdParse(message: Message, client): CommandMessage {
 		args: [],
 		command: '',
 		raw: '',
+		message,
 	};
 	if ( message.content.startsWith('.') ) {
 		cmd.raw = message.content;
