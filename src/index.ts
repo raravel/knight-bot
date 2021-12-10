@@ -152,11 +152,17 @@ client.on('voiceStateUpdate', async function(oldState, newState) {
 		} else if ( channel.id === '918698962880434257' ) {
 			// 공격대 생성
 			const name = `${member.nickname}님의_공격대`;
+			const roles = guild.roles.cache.filter((role: any) => ['임원', '길드원', '손님'].includes(role.name));
 			const c = await channel.parent?.createChannel(name, {
 				type: 'GUILD_VOICE',
 				permissionOverwrites: [
+					...roles.map((r: any) => ({
+						id: r,
+						allow: ['VIEW_CHANNEL'],
+					})) as any[],
 					{
-						id: member.id,
+						id: guild.roles.everyone,
+						deny: ['VIEW_CHANNEL'],
 					},
 				],
 				position: channel.parent?.children.size+1,
