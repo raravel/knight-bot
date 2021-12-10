@@ -6,6 +6,8 @@ import {
 	MessageButton,
 	TextChannel,
 	GuildMember,
+	VoiceChannel,
+	CategoryChannel,
 } from 'discord.js';
 import { LarkApi } from './lark-api';
 import joinMember from './join-member';
@@ -13,16 +15,13 @@ import {
 	readChat,
 	isClanMember,
 	findGuildAndChannel,
+	findGuild,
 } from './common/';
 import { cmdParse, processor } from './command/';
 
 const client = new Client({
 	intents: [
-		Intents.FLAGS.GUILDS,
-		Intents.FLAGS.GUILD_MESSAGES,
-		Intents.FLAGS.GUILD_MEMBERS,
-		Intents.FLAGS.GUILD_PRESENCES,
-		Intents.FLAGS.GUILD_VOICE_STATES,
+		...Object.values(Intents.FLAGS),
 	],
 });
 
@@ -141,16 +140,54 @@ client.on('voiceStateUpdate', async function(oldState, newState) {
 	const channel = newState.channel;
 	const member = newState.member as GuildMember;
 	const guild = member.guild;
-	const role = guild.roles.cache.find((role) => role.name === '쉬는중') as Role;
 	if ( channel ) {
+		console.log(channel);
 		if ( channel.id === '882935484144287754' ) {
-			await member.roles.add(role);
+			// 모험가 쉼터
+			const restRole = guild.roles.cache.find((role) => role.name === '쉬는중') as Role;
+			await member.roles.add(restRole);
+		} else if ( channel.id === '918698962880434257' ) {
+			// 공격대 생성
+			const name = `${member.nickname}님의_공격대`;
+			console.log('position', channel.parent?.children.size);
+			const c = await channel.parent?.createChannel(name, {
+				type: 'GUILD_VOICE',
+				permissionOverwrites: [
+					{
+						id: member.id,
+					},
+				],
+				position: channel.parent?.children.size+1,
+			});
+			if ( c ) {
+				await member.voice.setChannel(c as VoiceChannel);
+			}
+		} else if ( channel.parent?.id === '918694375976996885' ) {
+			// 기사단 카테고리
 		}
 	} else {
 		// exit void channel
-		await member.roles.remove(role);
+		if ( oldState.channelId === '882935484144287754' ) {
+			// 모험가 쉼터
+			const restRole = guild.roles.cache.find((role) => role.name === '쉬는중') as Role;
+			await member.roles.remove(restRole);
+		}
+		console.log(oldState);
 	}
 });
+
+setInterval(() => {
+	console.log('Check empty voice channel in raid category.');
+	const category = findGuildAndChannel(client, CLAN_NAME, '기사단') as CategoryChannel;
+	category.children.each((channel) => {
+		if ( channel.id !== '918698962880434257' && channel.type === 'GUILD_VOICE' ) {
+			// 생성된 공격대 음성 채널만 검사
+			if ( (channel as VoiceChannel).members.size <= 0 ) {
+				channel.delete('Empty people in voice channel');
+			}
+		}
+	});
+}, 1000 * 60);
 
 client.login(process.env.BOT_TOKEN);
 }
