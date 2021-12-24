@@ -126,12 +126,20 @@ client.on('interactionCreate', async function(interaction) {
 			if ( member.nickname === null ) {
 				await interaction.reply({ content: `<@${member.user.id}>님. 서버 프로필 변경에서 닉네임을 변경해 주세요.` });
 			} else {
-				const memberRole = guild.roles.cache.find((role) => role.name === '손님') as Role;
-				await member.roles.add(memberRole),
+				const user = await larkApi.getUser(member.nickname as string);
+				if ( user.itemLevel === 0 ) {
+					await interaction.reply({ content: '전투정보실 검색에 실패했습니다. 닉네임을 확인해 주세요.' });
+				} else {
+					const memberRole = guild.roles.cache.find((role) => role.name === '손님') as Role;
+					await member.roles.add(memberRole);
 
-				await interaction.reply(`<@${member.user.id}>님에게 손님역할이 부여되었습니다.`);
-				const channel = findGuildAndChannel(client, CLAN_NAME, '네리아주점') as TextChannel;
-				await channel.send({ content: `<@${member.user.id}>님 반갑습니다.` });
+					const serverRole = guild.roles.cache.find((role) => role.name === user.server) as Role;
+					await member.roles.add(serverRole);
+
+					await interaction.reply(`<@${member.user.id}>님에게 손님역할이 부여되었습니다.`);
+					const channel = findGuildAndChannel(client, CLAN_NAME, '네리아주점') as TextChannel;
+					await channel.send({ content: `<@${member.user.id}>님 반갑습니다.` });
+				}
 			}
 		}
 		setTimeout(() => {
@@ -184,6 +192,7 @@ client.on('voiceStateUpdate', async function(oldState, newState) {
 			const role = guild.roles.cache.find((role) => role.name === '쉼터에서 쉬는 중') as Role;
 			await member.roles.remove(role);
 		} else if ( oldState.channelId === '918732104047656980' ) {
+			// 네리아 주점
 			const role = guild.roles.cache.find((role) => role.name === '주점에서 마시는 중') as Role;
 			await member.roles.remove(role);
 		}

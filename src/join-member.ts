@@ -57,10 +57,13 @@ export default async function(member: GuildMember, force: boolean = false): Prom
 
 		if ( user.clan === CLAN_NAME ) {
 			const memberRole = guild.roles.cache.find((role) => role.name === '길드원') as Role;
+			const serverRole = guild.roles.cache.find((role) => role.name === user.server) as Role;
+			await member.roles.add(serverRole);
+			await member.roles.add(memberRole);
 			return {
 				detail: 'success',
 				result: true,
-				data: await member.roles.add(memberRole),
+				data: member,
 			};
 		}
 	}
