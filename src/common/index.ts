@@ -8,8 +8,14 @@ import fs from 'fs';
 import path from 'path';
 import { GuildMember, Client, Guild, Message, User } from 'discord.js';
 
-export function readChat(type: string) {
-	return fs.readFileSync(path.join(__dirname,`../chat/${type}.md`), { encoding: 'utf8' });
+export function readChat(type: string, ...args: any[]) {
+	let chat = fs.readFileSync(path.join(__dirname,`../chat/${type}.md`), { encoding: 'utf8' });
+
+	args.forEach((arg: any, idx: number) => {
+		chat = chat.replaceAll('$' + idx, arg.toString());
+	});
+	
+	return chat;
 }
 
 export function isClanMember(member: GuildMember) {

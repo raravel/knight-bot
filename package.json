@@ -38,6 +38,9 @@
 		"axios": "^0.24.0",
 		"cheerio": "^1.0.0-rc.10",
 		"discord.js": "^13.1.0",
-		"got": "^11.8.2"
+		"got": "^11.8.2",
+		"mongodb": "^3.7.3",
+		"reflect-metadata": "^0.1.13",
+		"typeorm": "^0.2.41"
 	}
 }
