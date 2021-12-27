@@ -11,7 +11,7 @@
 	"license": "MIT",
 	"scripts": {
 		"test": "mocha -r ts-node/register ./tests/example.test.ts",
-		"dev": "nodemon --watch src --watch package.json --watch tsconfig.js --delay 1 --exec 'npm run lint --silent; ts-node' src/index.ts",
+		"dev": "nodemon --watch src --watch package.json --watch tsconfig.js --delay 1 --exec 'npm run lint --silent; cross-env NODE_ENV=development ts-node' src/index.ts",
 		"lint": "eslint src/**/*",
 		"build": "rm -rf dist; tsc && cp -r src/chat dist/chat",
 		"prepublishOnly": "npm run build"
@@ -23,6 +23,7 @@
 		"@typescript-eslint/eslint-plugin": "^4.28.3",
 		"@typescript-eslint/parser": "^4.28.3",
 		"chai": "^4.3.4",
+		"cross-env": "^7.0.3",
 		"eslint": "^7.30.0",
 		"mocha": "^9.0.2",
 		"nodemon": "^2.0.4",

@@ -16,12 +16,14 @@ import {
 	isClanMember,
 	findGuildAndChannel,
 	findGuild,
+	IS_DEV,
+	CLAN_NAME,
 } from './common/';
 import { cmdParse, processor } from './command/';
 import 'reflect-metadata';
 import { createConnection, Connection } from 'typeorm';
 import { Flag } from './entity/flag';
-const config = require('../ormconfig.json');
+const config = IS_DEV ? require('../ormconfig.dev.json') : require('../ormconfig.json');
 
 const client = new Client({
 	intents: [
@@ -33,11 +35,12 @@ const larkApi = new LarkApi();
 
 (async () => {
 	const connection = await createConnection(config) as Connection;
-	const CLAN_NAME = '기사학원';
 
 	function isJoinComponent(component: MessageActionRow) {
-		if ( component.type === 'ACTION_ROW' ) {
-			return component.components[0]?.customId === 'sign-account';
+		if ( component ) {
+			if ( component.type === 'ACTION_ROW' ) {
+				return component.components[0]?.customId === 'sign-account';
+			}
 		}
 		return false;
 	}

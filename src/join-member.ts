@@ -4,11 +4,9 @@
  *
  * Copyright (c) raravel. Licensed under the MIT License.
  */
-import { Role } from 'discord.js';
+import { Role, GuildMember } from 'discord.js';
 import { LarkApi } from './lark-api';
-import { GuildMember } from 'discord.js';
-
-const CLAN_NAME = '기사학원';
+import { GUILD_NAME } from './common/';
 
 const larkApi = new LarkApi();
 
@@ -55,7 +53,7 @@ export default async function(member: GuildMember, force: boolean = false): Prom
 			};
 		}
 
-		if ( user.clan === CLAN_NAME ) {
+		if ( user.clan === GUILD_NAME ) {
 			const memberRole = guild.roles.cache.find((role) => role.name === '길드원') as Role;
 			const serverRole = guild.roles.cache.find((role) => role.name === user.server) as Role;
 			await member.roles.add(serverRole);
