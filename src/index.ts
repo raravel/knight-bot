@@ -166,7 +166,7 @@ const larkApi = new LarkApi();
 	});
 
 	client.on('voiceStateUpdate', async function(oldState, newState) {
-		const channel = newState.channel;
+		const channel = newState.channel as VoiceChannel;
 		const member = newState.member as GuildMember;
 		const guild = member.guild;
 		const flagRepo = connection.getRepository(Flag);
@@ -180,64 +180,68 @@ const larkApi = new LarkApi();
 			await flagRepo.save(flag);
 		}
 
-		if ( channel ) {
-			if ( channel.id === '882935484144287754' ) {
-				// 모험가 쉼터
-				const role = guild.roles.cache.find((role) => role.name === '쉼터에서 쉬는 중') as Role;
-				await member.roles.add(role);
+		if ( oldState.channelId === null ) { 
+			// join voice channel
+			console.log(`join voice channel, channelId=${channel?.id} memberId=${member.id}`);
+			if ( channel ) {
+				if ( channel.id === '882935484144287754' ) {
+					// 모험가 쉼터
+					const role = guild.roles.cache.find((role) => role.name === '쉼터에서 쉬는 중') as Role;
+					await member.roles.add(role);
 
-				if ( !flag.shelter ) {
-					const row = new MessageActionRow()
+					if ( !flag.shelter ) {
+						const row = new MessageActionRow()
 						.addComponents(
 							new MessageButton()
-								.setCustomId('off-info-shelter')
-								.setLabel('확인했습니다')
-								.setStyle('PRIMARY')
+							.setCustomId('off-info-shelter')
+							.setLabel('확인했습니다')
+							.setStyle('PRIMARY')
 						);
-					const txtChannel = findGuildAndChannel(client, CLAN_NAME, '모험가쉼터') as TextChannel;
-					await txtChannel.send({ content: readChat('voice-channel', member.id, channel.id), components: [ row ] });
-				}
-			} else if ( channel.id === '918732104047656980' ) {
-				// 네리아 주점
-				const role = guild.roles.cache.find((role) => role.name === '주점에서 마시는 중') as Role;
-				await member.roles.add(role);
+						const txtChannel = findGuildAndChannel(client, CLAN_NAME, '모험가쉼터') as TextChannel;
+						await txtChannel.send({ content: readChat('voice-channel', member.id, channel.id), components: [ row ] });
+					}
+				} else if ( channel.id === '918732104047656980' ) {
+					// 네리아 주점
+					const role = guild.roles.cache.find((role) => role.name === '주점에서 마시는 중') as Role;
+					await member.roles.add(role);
 
-				if ( !flag.pub ) {
-					const row = new MessageActionRow()
+					if ( !flag.pub ) {
+						const row = new MessageActionRow()
 						.addComponents(
 							new MessageButton()
-								.setCustomId('off-info-pub')
-								.setLabel('확인했습니다')
-								.setStyle('PRIMARY')
+							.setCustomId('off-info-pub')
+							.setLabel('확인했습니다')
+							.setStyle('PRIMARY')
 						);
-					const txtChannel = findGuildAndChannel(client, CLAN_NAME, '주점의_비밀공간') as TextChannel;
-					await txtChannel.send({ content: readChat('voice-channel', member.id, channel.id), components: [ row ] });
+						const txtChannel = findGuildAndChannel(client, CLAN_NAME, '주점의_비밀공간') as TextChannel;
+						await txtChannel.send({ content: readChat('voice-channel', member.id, channel.id), components: [ row ] });
+					}
+				} else if ( channel.id === '918698962880434257' ) {
+					// 공격대 생성
+					const name = `${member.nickname}님의_공격대`;
+					const roles = guild.roles.cache.filter((role: any) => ['임원', '길드원', '손님'].includes(role.name));
+					const c = await channel.parent?.createChannel(name, {
+						type: 'GUILD_VOICE',
+						permissionOverwrites: [
+							...roles.map((r: any) => ({
+								id: r,
+								allow: ['VIEW_CHANNEL'],
+							})) as any[],
+							{
+								id: guild.roles.everyone,
+								deny: ['VIEW_CHANNEL'],
+							},
+						],
+						position: channel.parent?.children.size+1,
+					});
+					if ( c ) {
+						await member.voice.setChannel(c as VoiceChannel);
+					}
+				} else if ( channel.parent?.id === '918694375976996885' ) {
+					// 기사단 카테고리
 				}
-			} else if ( channel.id === '918698962880434257' ) {
-				// 공격대 생성
-				const name = `${member.nickname}님의_공격대`;
-				const roles = guild.roles.cache.filter((role: any) => ['임원', '길드원', '손님'].includes(role.name));
-				const c = await (channel.parent as any)?.createChannel(name, {
-					type: 'GUILD_VOICE',
-					permissionOverwrites: [
-						...roles.map((r: any) => ({
-							id: r,
-							allow: ['VIEW_CHANNEL'],
-						})) as any[],
-						{
-							id: guild.roles.everyone,
-							deny: ['VIEW_CHANNEL'],
-						},
-					],
-					position: (channel.parent as any)?.children.size+1,
-				});
-				if ( c ) {
-					await member.voice.setChannel(c as VoiceChannel);
-				}
-			} else if ( channel.parent?.id === '918694375976996885' ) {
-				// 기사단 카테고리
 			}
-		} else {
+		} else if ( newState.channelId === null ) {
 			// exit void channel
 			if ( oldState.channelId === '882935484144287754' ) {
 				// 모험가 쉼터
