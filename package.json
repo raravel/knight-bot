@@ -42,6 +42,7 @@
 		"got": "^11.8.2",
 		"mongodb": "^3.7.3",
 		"reflect-metadata": "^0.1.13",
+		"tough-cookie": "^4.0.0",
 		"typeorm": "^0.2.41"
 	}
 }

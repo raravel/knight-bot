@@ -12,6 +12,7 @@ import {
 	Client,
 } from 'discord.js';
 import { charactor } from './search';
+import conch from './magic-conch';
 import joinMember from '../join-member';
 import {
 	findChannelFromGuild,
@@ -37,6 +38,7 @@ export interface CommandObject {
 
 const commands: CommandObject[] = [
 	charactor,
+	conch,
 	{
 		command: '승인',
 		permission: null,

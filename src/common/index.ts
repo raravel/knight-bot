@@ -7,7 +7,10 @@
 import fs from 'fs';
 import path from 'path';
 import { GuildMember, Client, Guild, Message, User } from 'discord.js';
+import { parse as CookieParse } from 'tough-cookie';
 
+
+export type Json = Record<string, any>;
 export const IS_DEV = process.env['NODE_ENV'] === 'development';
 export const config = IS_DEV ? require('../../config.dev.json') : require('../../config.json');
 export const CLAN_NAME = config['CLAN_NAME'];
@@ -45,4 +48,24 @@ export function findMemberFromGuild(guild: Guild, key: string, val: any) {
 
 export function findGuildAndMember(client: Client, guild: string, key: string, val: any) {
 	return findMemberFromGuild(findGuild(client, guild) as Guild, key, val);
+}
+
+export function cooker(cookie: any) {
+	const cook: Json = {};
+	let cookies: any = [];
+	if ( cookie instanceof Array) {
+		cookies = cookie.map((c) => CookieParse(c).toJSON());
+	} else {
+		if ( cookie ) {
+			cookies = [ CookieParse(cookie).toJSON() ];
+		}
+	}
+
+	cookies.forEach((ck: Json) => {
+		cook[ck.key as string] = {
+			value: ck.value,
+			domain: ck.domain,
+		};
+	});
+	return cook;
 }
