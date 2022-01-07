@@ -12,12 +12,14 @@
 	"scripts": {
 		"test": "mocha -r ts-node/register ./tests/example.test.ts",
 		"dev": "nodemon --watch src --watch package.json --watch tsconfig.js --delay 1 --exec 'npm run lint --silent; cross-env NODE_ENV=development ts-node' src/index.ts",
+		"api:dev": "nodemon --watch src/api --delay 1 --exec `cross-env NODE_ENV=development ts-node` src/api/index.ts",
 		"lint": "eslint src/**/*",
 		"build": "rm -rf dist; tsc && cp -r src/chat dist/chat",
 		"prepublishOnly": "npm run build"
 	},
 	"devDependencies": {
 		"@types/chai": "^4.2.19",
+		"@types/express": "^4.17.13",
 		"@types/mocha": "^8.2.2",
 		"@types/node": "^16.11.6",
 		"@typescript-eslint/eslint-plugin": "^4.28.3",
@@ -39,6 +41,7 @@
 		"axios": "^0.24.0",
 		"cheerio": "^1.0.0-rc.10",
 		"discord.js": "^13.4.0",
+		"express": "^4.17.2",
 		"got": "^11.8.2",
 		"mongodb": "^3.7.3",
 		"reflect-metadata": "^0.1.13",

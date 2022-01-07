@@ -2,6 +2,10 @@
 .git
 package-lock.json
 yarn.lock
+yarn-error.log
 node_modules
 dist
 ormconfig.json
+ormconfig.dev.json
+config.json
+config.dev.json
