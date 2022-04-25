@@ -1,4 +1,5 @@
 *.swp
+.env
 .git
 package-lock.json
 yarn.lock

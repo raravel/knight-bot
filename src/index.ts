@@ -23,6 +23,8 @@ import { cmdParse, processor } from './command/';
 import 'reflect-metadata';
 import { createConnection, Connection } from 'typeorm';
 import { Flag } from './entity/flag';
+import { Incident } from './entity/incident';
+import { getIncidentBoard } from './inven';
 const config = IS_DEV ? require('../ormconfig.dev.json') : require('../ormconfig.json');
 
 const client = new Client({
@@ -34,6 +36,7 @@ const client = new Client({
 const larkApi = new LarkApi();
 
 (async () => {
+	console.log('orm config', config);
 	const connection = await createConnection(config) as Connection;
 
 	function isJoinComponent(component: MessageActionRow) {
@@ -266,6 +269,34 @@ const larkApi = new LarkApi();
 				}
 			}
 		});
+	}, 1000 * 60);
+
+	setInterval(async () => {
+		console.log('Check inven incident board');
+		const query = '기사학원';
+
+		const list = await getIncidentBoard(query);
+		if ( !list.length ) {
+			console.log('No such incident board' + query);
+			return;
+		}
+
+		const repo = connection.getRepository(Incident);
+		for ( const item of list ) {
+			const tmp = await repo.findOne({ id: item.idx });
+			if ( tmp ) {
+				return;
+			}
+
+			const incident = new Incident();
+			incident.id = item.idx;
+			incident.title = item.title;
+			incident.link = item.link;
+			await repo.save(incident);
+
+			const channel = findGuildAndChannel(client, CLAN_NAME, IS_DEV ? '마법학회' : '원로원') as TextChannel;
+			await channel.send({ content: readChat('incident', query, item.title, item.link) });
+		}
 	}, 1000 * 60);
 
 	client.login(process.env.BOT_TOKEN);
