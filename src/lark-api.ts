@@ -522,7 +522,23 @@ export class LarkApi {
                     .filter(([key]) => /.*?(?<!Gem)_/.test(key))
                     .map(([key, val]) => val);
 
-                const weaponElementList = ignoreGemsList.filter((val) => val?.Element_007?.type === 'Progress');
+                const weaponElementList = ignoreGemsList.filter((val: any) => {
+                    const element_008 = val?.Element_008?.value?.Element_000;
+                    if ( typeof element_008 === 'string' ) {
+                        if ( element_008.text() === '세트 효과 레벨' ) {
+                            return true;
+                        }
+                    }
+
+                    const element_009 = val?.Element_009?.value?.Element_000;
+                    if ( typeof element_009 === 'string' ) {
+                        if ( element_009.text() === '세트 효과 레벨' ) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                });
                 user.weapons = parseWeapon(weaponElementList);
 
                 const accessoryElementList = ignoreGemsList.filter((val) => {
