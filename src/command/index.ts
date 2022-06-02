@@ -121,7 +121,7 @@ const commands: CommandObject[] = [
                 .setColor('#c231c4')
                 .setTitle(`사용 가능한 명령어 목록`)
                 .setDescription('모든 명령어 앞에는 **.** 을 붙여야 합니다.')
-                .addFields(commands.map((command) => ({
+                .addFields(commands.filter((c) => !c.hide).map((command) => ({
                     name: command.usage,
                     value: command.description,
                 })));
