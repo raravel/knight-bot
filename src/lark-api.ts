@@ -24,7 +24,7 @@ export interface LarkUser {
 	battle: { text: string, value: string }[];
 	engrave: { text: string, value: string }[];
     gems: LarkGem[];
-    wepons: LarkWeapon[];
+    weapons: LarkWeapon[];
     accessories: LarkAccessory[];
 }
 
@@ -523,7 +523,7 @@ export class LarkApi {
                     .map(([key, val]) => val);
 
                 const weaponElementList = ignoreGemsList.filter((val) => val?.Element_007?.type === 'Progress');
-                user.wepons = parseWeapon(weaponElementList);
+                user.weapons = parseWeapon(weaponElementList);
 
                 const accessoryElementList = ignoreGemsList.filter((val) => {
                     return val.Element_004?.value?.Element_000?.text() === '기본 효과' &&

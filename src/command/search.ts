@@ -75,11 +75,62 @@ export const charactorGems: CommandObject = {
         if ( !Number.isNaN(user.life) ) {
             const msg = new MessageEmbed()
                 .setColor('#c231c4')
-                .setTitle(`${user.name}님의 정보`)
+                .setTitle(`${user.name}님의 보석`)
                 .addFields(
                     user.gems.map(({ title, effect }) => ({
                         name: title,
                         value: `[${effect.job}] ${effect.skill} ${effect.description} ${effect.value}% ${effect.description2}`,
+                    }))
+                );
+
+            await cmd.message.channel.send({ embeds: [msg] });
+            return '';
+        } else {
+            return `**${cmd.content}** 유저의 정보를 찾을 수 없습니다.`;
+        }
+    },
+};
+
+export const charactorWeapon: CommandObject = {
+    command: '장비',
+    permission: null,
+    async run(cmd: CommandMessage, client: Client) {
+		const user = await larkApi.getUser(cmd.content);
+
+        if ( !Number.isNaN(user.life) ) {
+            const msg = new MessageEmbed()
+                .setColor('#c231c4')
+                .setTitle(`${user.name}님의 장비`)
+                .addField(
+                    '\u200B',
+                    user.weapons.map(({ upgrade, title, quality }) => 
+                        `+${upgrade} ${title} (품질: ${quality})`,
+                    ).join('\n'),
+                );
+
+            await cmd.message.channel.send({ embeds: [msg] });
+            return '';
+        } else {
+            return `**${cmd.content}** 유저의 정보를 찾을 수 없습니다.`;
+        }
+    },
+};
+
+export const charactorAccessory: CommandObject = {
+    command: '악세',
+    permission: null,
+    async run(cmd: CommandMessage, client: Client) {
+		const user = await larkApi.getUser(cmd.content);
+
+        if ( !Number.isNaN(user.life) ) {
+            const msg = new MessageEmbed()
+                .setColor('#c231c4')
+                .setTitle(`${user.name}님의 장신구`)
+                .addFields(
+                    user.accessories.map((accessory) => ({
+                        name: `${accessory.title} +${accessory.quality}`,
+                        value: accessory.status.map((s) => `${s.text} +${s.value}`).join(`, `) + '\n'
+                            + accessory.engrave.map((e) => `[${e.text}] +${e.value}`).join('\n'),
                     }))
                 );
 
