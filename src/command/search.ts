@@ -6,33 +6,87 @@
  */
 import { CommandMessage, CommandObject } from '.';
 import { LarkApi } from '../lark-api';
+import { MessageEmbed, Client } from 'discord.js';
 
 const larkApi = new LarkApi();
 
 export const charactor: CommandObject = {
 	command: '정보',
 	permission: null,
-	async run(cmd: CommandMessage, client) {
+	async run(cmd: CommandMessage, client: Client) {
 		const user = await larkApi.getUser(cmd.content);
-		let ret = '';
-		ret += '```css\n';
-		ret += `[${user.name}] (${user.server}) ${user.class}\n`;
-		ret += `전투 Lv. ${user.level}\n`;
-		ret += `원정대 Lv. ${user.expLevel}\n`;
-		ret += `아이템 Lv. ${user.itemLevel}\n`;
-		ret += `공격력: ${user.offense}\n`;
-		ret += `생명력: ${user.life}\n`;
-		ret += `길드 '${user.clan}'\n`;
-		ret += '```\n';
 
-		ret += '```css\n';
-		ret += user.battle.map((battle) => `${battle.text}: ${battle.value}`).join('\n');
-		ret += '```\n';
+        if ( !Number.isNaN(user.life) ) {
+            const msg = new MessageEmbed()
+                .setColor('#c231c4')
+                .setTitle(`${user.name}님의 정보`)
+                .addField(
+                    '기본 정보',
+                    `서버: ${user.server}\n` +
+                        `전투: Lv. ${user.level}\n` +
+                        `원정대: Lv. ${user.expLevel}\n` +
+                        `아이템: Lv. ${user.itemLevel}`,
+                    true
+                )
+                .addField(
+                    '기본 특성',
+                    `공격력: ${user.offense}\n` +
+                        `최대 생명력: ${user.life}\n`,
+                    true
+                )
+                .addField(
+                    '길드',
+                    '```yaml\n'+
+                        user.clan + '\n'+
+                        '```',
+                    true
+                )
+                .addField('\u200B', '\u200B')
+                .addField(
+                    '전투 특성',
+                    user.battle
+                    .map(({ text, value }) => `${text} +${value}`)
+                    .join('\n'),
+                    true
+                )
+                .addField('\u200B', '\u200B', true)
+                .addField(
+                    '장착 각인',
+                    user.engrave
+                    .map(({ text, value }) => `${text} +${value}`)
+                    .join('\n'),
+                    true
+                );
 
-		ret += '```css\n';
-		ret += user.engrave.map((engrave) => `${engrave.text}: ${engrave.value}`).join('\n');
-		ret += '```\n';
-
-		return ret;
+            await cmd.message.channel.send({ embeds: [msg] });
+            return '';
+        } else {
+            return `**${cmd.content}** 유저의 정보를 찾을 수 없습니다.`;
+        }
 	},
+};
+
+export const charactorGems: CommandObject = {
+    command: '보석',
+    permission: null,
+    async run(cmd: CommandMessage, client: Client) {
+		const user = await larkApi.getUser(cmd.content);
+
+        if ( !Number.isNaN(user.life) ) {
+            const msg = new MessageEmbed()
+                .setColor('#c231c4')
+                .setTitle(`${user.name}님의 정보`)
+                .addFields(
+                    user.gems.map(({ title, effect }) => ({
+                        name: title,
+                        value: `[${effect.job}] ${effect.skill} ${effect.description} ${effect.value}% ${effect.description2}`,
+                    }))
+                );
+
+            await cmd.message.channel.send({ embeds: [msg] });
+            return '';
+        } else {
+            return `**${cmd.content}** 유저의 정보를 찾을 수 없습니다.`;
+        }
+    },
 };

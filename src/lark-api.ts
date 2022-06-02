@@ -21,8 +21,8 @@ export interface LarkUser {
 	class: string;
 	offense: number;
 	life: number;
-	battle: any[];
-	engrave: any[];
+	battle: { text: string, value: string }[];
+	engrave: { text: string, value: string }[];
     gems: LarkGem[];
     wepons: LarkWeapon[];
     accessories: LarkAccessory[];

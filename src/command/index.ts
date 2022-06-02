@@ -11,7 +11,7 @@ import {
 	Guild,
 	Client,
 } from 'discord.js';
-import { charactor } from './search';
+import { charactor, charactorGems } from './search';
 import conch from './magic-conch';
 import joinMember from '../join-member';
 import {
@@ -38,6 +38,7 @@ export interface CommandObject {
 
 const commands: CommandObject[] = [
 	charactor,
+	charactorGems,
 	conch,
 	{
 		command: '승인',
