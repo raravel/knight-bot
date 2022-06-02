@@ -19,6 +19,9 @@ const USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, l
 export default {
 	command: '소라고동',
 	permission: null,
+    hide: false,
+    usage: '소라고동 [질문]',
+    description: '마법의 소라고동님이 고민을 해결해주실 것입니다.',
 	async run(cmd: CommandMessage, client: Client) {
 		let res: any = await got.get('http://m.tf.co.kr/sa2da/step1?idx=92', {
 			headers: {

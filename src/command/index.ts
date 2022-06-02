@@ -10,6 +10,7 @@ import {
 	TextChannel,
 	Guild,
 	Client,
+    MessageEmbed,
 } from 'discord.js';
 import {
     charactor,
@@ -39,6 +40,9 @@ export interface CommandObject {
 	command: string;
 	permission: any;
 	run: CommandFunction;
+    hide: boolean;
+    usage: string;
+    description: string;
 }
 
 const commands: CommandObject[] = [
@@ -49,6 +53,9 @@ const commands: CommandObject[] = [
 	conch,
 	{
 		command: '승인',
+        hide: true,
+        usage: '승인 [디스코드 이름]',
+        description: '수동으로 길드원 역할을 부여합니다.',
 		permission: null,
 		async run(cmd: CommandMessage, client: Client) {
 			const guild = cmd.author?.guild as Guild;
@@ -66,6 +73,9 @@ const commands: CommandObject[] = [
 	{
 		command: '주사위',
 		permission: null,
+        hide: false,
+        usage: '주사위',
+        description: '1 부터 100가지의 수 중 하나를 랜덤하게 뽑습니다.',
 		run(cmd: CommandMessage, client: Client) {
 			const num = Math.floor(Math.random() * 100)+1;
 			let ret = `<@${cmd?.author?.user.id}>님의 주사위는 **${num}**입니다.`;
@@ -81,6 +91,9 @@ const commands: CommandObject[] = [
 	},
 	{
 		command: '청소',
+        hide: true,
+        usage: '청소 [#청소 텍스트 채널 멘션]',
+        description: '텍스트채널의 최근 메시지 30개를 제거합니다.',
 		permission: null,
 		async run(cmd: CommandMessage, client: Client) {
 			for ( const channel of cmd.message.mentions.channels.values() ) {
@@ -97,6 +110,26 @@ const commands: CommandObject[] = [
 			return '청소가 전부 끝났습니다.';
 		},
 	},
+    {
+        command: '명령어',
+        hide: false,
+        usage: '명령어',
+        description: '사용 가능한 명령어 목록을 불러옵니다.',
+        permission: null,
+        async run(cmd: CommandMessage, client: Client) {
+            const msg = new MessageEmbed()
+                .setColor('#c231c4')
+                .setTitle(`사용 가능한 명령어 목록`)
+                .setDescription('모든 명령어 앞에는 **.** 을 붙여야 합니다.')
+                .addFields(commands.map((command) => ({
+                    name: command.usage,
+                    value: command.description,
+                })));
+
+            await cmd.message.channel.send({ embeds: [msg] });
+            return '';
+        }
+    }
 ];
 
 export function cmdParse(message: Message, client): CommandMessage {

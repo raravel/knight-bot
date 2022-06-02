@@ -13,6 +13,9 @@ const larkApi = new LarkApi();
 export const charactor: CommandObject = {
 	command: '정보',
 	permission: null,
+    hide: false,
+    usage: '정보 [로스트아크 캐릭터 이름]',
+    description: '캐릭터의 기본 정보를 불러옵니다.',
 	async run(cmd: CommandMessage, client: Client) {
 		const user = await larkApi.getUser(cmd.content);
 
@@ -69,6 +72,9 @@ export const charactor: CommandObject = {
 export const charactorGems: CommandObject = {
     command: '보석',
     permission: null,
+    hide: false,
+    usage: '보석 [로스트아크 캐릭터 이름]',
+    description: '캐릭터의 보석 목록을 불러옵니다.',
     async run(cmd: CommandMessage, client: Client) {
 		const user = await larkApi.getUser(cmd.content);
 
@@ -94,6 +100,9 @@ export const charactorGems: CommandObject = {
 export const charactorWeapon: CommandObject = {
     command: '장비',
     permission: null,
+    hide: false,
+    usage: '장비 [로스트아크 캐릭터 이름]',
+    description: '캐릭터의 장비 목록을 불러옵니다.',
     async run(cmd: CommandMessage, client: Client) {
 		const user = await larkApi.getUser(cmd.content);
 
@@ -119,6 +128,9 @@ export const charactorWeapon: CommandObject = {
 export const charactorAccessory: CommandObject = {
     command: '악세',
     permission: null,
+    hide: false,
+    usage: '악세 [로스트아크 캐릭터 이름]',
+    description: '캐릭터의 장신구 목록을 불러옵니다.',
     async run(cmd: CommandMessage, client: Client) {
 		const user = await larkApi.getUser(cmd.content);
 
