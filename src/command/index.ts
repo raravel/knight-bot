@@ -17,6 +17,7 @@ import {
     charactorGems,
     charactorAccessory,
     charactorWeapon,
+    charactorSkills,
 } from './search';
 import conch from './magic-conch';
 import joinMember from '../join-member';
@@ -50,6 +51,7 @@ const commands: CommandObject[] = [
 	charactorGems,
     charactorAccessory,
     charactorWeapon,
+    charactorSkills,
 	conch,
 	{
 		command: '승인',

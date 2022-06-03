@@ -125,6 +125,34 @@ export const charactorWeapon: CommandObject = {
     },
 };
 
+export const charactorSkills: CommandObject = {
+    command: '스킬',
+    permission: null,
+    hide: false,
+    usage: '스킬 [로스트아크 캐릭터 이름]',
+    description: '캐릭터의 사용중인 스킬 목록을 불러옵니다.',
+    async run(cmd: CommandMessage, client: Client) {
+		const user = await larkApi.getUser(cmd.content);
+
+        if ( !Number.isNaN(user.life) ) {
+            const msg = new MessageEmbed()
+                .setColor('#c231c4')
+                .setTitle(`${user.name}님의 스킬`)
+                .addFields(
+                    user.skills.map((skill) => ({
+                        name: `${skill.title} ${skill.level} ${skill.rune ? `[${skill.rune.name}]` : ''}`,
+                        value: skill.tridpods.map((tridpod) => `${tridpod.name} ${tridpod.level}`).join('\n') || '\u200B',
+                    }))
+                );
+
+            await cmd.message.channel.send({ embeds: [msg] });
+            return '';
+        } else {
+            return `**${cmd.content}** 유저의 정보를 찾을 수 없습니다.`;
+        }
+    },
+};
+
 export const charactorAccessory: CommandObject = {
     command: '악세',
     permission: null,
