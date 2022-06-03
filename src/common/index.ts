@@ -69,3 +69,7 @@ export function cooker(cookie: any) {
 	});
 	return cook;
 }
+
+export function getMemberName(member: GuildMember) {
+    return member.nickname || member.user.username;
+}

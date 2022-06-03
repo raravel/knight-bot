@@ -18,6 +18,7 @@ import {
 	findGuild,
 	IS_DEV,
 	CLAN_NAME,
+    getMemberName,
 } from './common/';
 import { cmdParse, processor } from './command/';
 import 'reflect-metadata';
@@ -124,15 +125,15 @@ const larkApi = new LarkApi();
 			}, 5000);
 		} else if ( interaction.customId === 'sign-guest' ) {
 
-			console.log(`[${member.user.id}] ${member.nickname} 손님으로 가입 시도`);
+			console.log(`[${member.user.id}] ${getMemberName(member)} 손님으로 가입 시도`);
 
 			if ( member.roles.cache.find((role) => role.name === '손님' || role.name === '길드원') ) {
 				await interaction.reply({ content: `<@${member.user.id}>님. 이미 손님 역할이 부여된 멤버입니다.` });
 			} else {
-				if ( member.nickname === null ) {
+				if ( getMemberName(member) === null ) {
 					await interaction.reply({ content: `<@${member.user.id}>님. 서버 프로필 변경에서 닉네임을 변경해 주세요.` });
 				} else {
-					const user = await larkApi.getUser(member.nickname as string);
+					const user = await larkApi.getUser(getMemberName(member) as string);
 					if ( user.itemLevel === 0 ) {
 						await interaction.reply({ content: '전투정보실 검색에 실패했습니다. 닉네임을 확인해 주세요.' });
 					} else {

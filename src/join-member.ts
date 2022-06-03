@@ -6,14 +6,14 @@
  */
 import { Role, GuildMember } from 'discord.js';
 import { LarkApi } from './lark-api';
-import { GUILD_NAME } from './common/';
+import { GUILD_NAME, getMemberName } from './common/';
 
 const larkApi = new LarkApi();
 
 export default async function(member: GuildMember, force: boolean = false): Promise<{ data: GuildMember|null, result: boolean, detail: string }> {
 	const guild = member.guild;
 
-	console.log(`[${member.user.id}] ${member.nickname} 가입 시도`);
+	console.log(`[${member.user.id}] ${getMemberName(member)} 가입 시도`);
 
 	if ( member.roles.cache.find((role) => role.name === '길드원') ) {
 		return {
@@ -36,7 +36,7 @@ export default async function(member: GuildMember, force: boolean = false): Prom
 	}
 	*/
 
-	const user = await larkApi.getUser(member.nickname as string);
+	const user = await larkApi.getUser(getMemberName(member) as string);
 	if ( force ) {
 		const memberRole = guild.roles.cache.find((role) => role.name === '길드원') as Role;
 		return {
